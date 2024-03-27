@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "48056550707",
+    "project_id": "oops-we-got-married",
+    "storage_bucket": "oops-we-got-married.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:48056550707:android:242d843447f234003c6a46",
+        "android_client_info": {
+          "package_name": "com.example.oops_we_got_married"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAq42v2tztQSvzVwlpp06GEvJJj0S983rg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

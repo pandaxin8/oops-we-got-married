@@ -1,6 +1,6 @@
 # Oops, We Got Married!
 
-A hilarious asynchronous dating sim integrated with Gemini API where your choices change everything.
+A hilarious asynchronous dating sim where your choices change everything!
 
 ## Project Description
 - Brief Overview: asynchronous dating sim, AI-generated scenarios, collaborative timeline building, lighthearted humour

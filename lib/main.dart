@@ -1,11 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:oops_we_got_married/firebase_options.dart';
+import 'package:oops_we_got_married/ui/screens/sign_in_page.dart';
 import 'package:uuid/uuid.dart';
 import 'package:oops_we_got_married/services/gemini_service.dart';
 import 'package:oops_we_got_married/widgets/chat_widget.dart'; // Ensure this path is correct
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Initialize Flutter
@@ -26,11 +29,26 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const ChatPage(),
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            if (snapshot.hasData) {
+              // User is signed in
+              return const ChatPage();
+            }
+            // User is not signed in
+            return SignInPage();
+          }
+          // Waiting for authentication state to be available
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        },
+      ),
     );
   }
 }
-
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
 

@@ -6,16 +6,19 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart' as chat_ui;
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:mime/mime.dart';
+import 'package:oops_we_got_married/models/message.dart';
+import 'package:oops_we_got_married/services/chat_service.dart';
 import 'package:oops_we_got_married/services/gemini_service.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:oops_we_got_married/widgets/chat_widget.dart';
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -41,10 +44,13 @@ class _ChatPageState extends State<ChatPage> {
     id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
   );
 
+  late final ChatService _chatService; 
+
   @override
   void initState() {
     super.initState();
     _geminiService = GeminiService();
+    _chatService = ChatService();
     _loadMessages();
   }
 
@@ -209,8 +215,9 @@ class _ChatPageState extends State<ChatPage> {
       id: const Uuid().v4(),
       text: message.text,
     );
-
-    _addMessage(textMessage);
+    // Save message to Firestore
+    _chatService.sendMessage(textMessage.text, _user.id, 'chatroomID'); 
+    // _addMessage(textMessage);
   }
 
   void _loadMessages() async {
@@ -254,19 +261,29 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        body: ChatWidget(
+        body: StreamBuilder<List<Message>> (
+          stream: _chatService.getMessagesStream(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ChatWidget(
           // Pass the necessary parameters to the ChatWidget
           messages: _messages,
           user: const types.User(id: 'some_unique_user_id'), // Adjust as necessary
           onSendPressed: _handleSendPressed,
           onAttachmentPressed: _handleAttachmentPressed,
           onGenerateScenario: _onGenerateScenarioPressed, // Pass the scenario generation method
+        );
+            } else {
+              return const Center(child: CircularProgressIndicator());
+            }
+          },
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _onGenerateScenarioPressed,
-          child: Icon(Icons.casino), // or any other appropriate icon
-          tooltip: 'Generate Scenario',
-      ),
-      );
+          floatingActionButton: FloatingActionButton(
+            onPressed: _onGenerateScenarioPressed,
+            child: Icon(Icons.casino), // or any other appropriate icon
+            tooltip: 'Generate Scenario',
+        ),
+  );
+   
 }
 

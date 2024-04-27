@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:oops_we_got_married/firebase_options.dart';
+import 'package:oops_we_got_married/models/message.dart';
+import 'package:oops_we_got_married/services/chat_service.dart';
 import 'package:oops_we_got_married/ui/screens/sign_in_page.dart';
 import 'package:uuid/uuid.dart';
 import 'package:oops_we_got_married/services/gemini_service.dart';
@@ -60,6 +63,7 @@ class _ChatPageState extends State<ChatPage> {
   List<types.Message> _messages = [];
   late final GeminiService _geminiService;
   late final types.User _user; // Assume a user setup is necessary
+  late final ChatService _chatService = ChatService();
 
   @override
   void initState() {
@@ -83,6 +87,16 @@ class _ChatPageState extends State<ChatPage> {
       text: partialText.text,
     );
     _addMessage(textMessage);
+    _chatService.sendMessage(textMessage.text, _user.id, 'chatroomID'); 
+    // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    // var messagesRef = _firestore.collection('messages');
+    // messagesRef.add({
+    //   'text': textMessage.text,
+    //   'senderId': _user.id,
+    //   'receiverId': 'chatroomID',
+    //   'timestamp': FieldValue.serverTimestamp(), // Uses server time
+    // });
+
   }
 
   void _onGenerateScenarioPressed() async {
